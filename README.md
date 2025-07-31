@@ -59,6 +59,8 @@
 ---
 
 ## クレジット・参考 / Credits
+
+
 > 本MODはMinecraft 1.7.3時代に配布されていたSolar Apocalypse MODに触発されており、オリジナルMODの雰囲気をリスペクトしていますが、コード・アセットはすべて自作です。オリジナル作者の権利を侵害する意図はありません。
 
 - finitewater作者様の一部コード・実装アイデアを参考
@@ -77,6 +79,7 @@
 Each day, the sun gets closer, burning grass, evaporating water, igniting forests, turning sand to glass, and setting every entity on fire.  
 Survive underground… if you can.  
 **No performance optimization, all atmosphere! Use at your own risk.**
+
 > This mod is inspired by the original Solar Apocalypse mod (Minecraft 1.7.3 era). All code and assets are original, and no infringement of the original author's rights is intended.
 
 ---
