@@ -42,6 +42,17 @@ Solar Apocalypseの調整値はワールドごとではなく、Forgeの `config
 * `SolarApocalypseConfig.SERVER_SPEC` を `COMMON_SPEC` にリネーム
 * 生成先を `run/saves/<world>/serverconfig/solarapocalypse-server.toml` ではなく `run/config/solarapocalypse-common.toml` 側に変更
 
+## 2026-07-09 Grass spread suppression and config comments
+
+草ブロックが土になっても、近くの草ブロックや菌糸ブロックからすぐ再拡散していた。
+水源化とは違いForge側に専用キャンセルイベントが見当たらないため、既存のMixin設定を使ってvanillaの拡散処理へ直接差し込む方針にした。
+
+対応。
+
+* `SpreadingSnowyDirtBlock#randomTick` にMixinを追加
+* 終末の草劣化日以降、オーバーワールドかつ空が見える場所では草ブロック/菌糸ブロックの自然拡散random tickをキャンセル
+* config説明コメントを英語行の下に日本語行が出る形へ変更
+
 ## 2026-07-09 VS Code classpath diagnostics
 
 VS Code上で `net.minecraftforge.fml.*` が存在しないという診断が再発した。
