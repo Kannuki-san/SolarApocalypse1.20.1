@@ -1,0 +1,12 @@
+{
+    "java.jdt.ls.java.home": "/home/kannuki/.sdkman/candidates/java/17.0.19-zulu",
+    "java.import.gradle.java.home": "/home/kannuki/.sdkman/candidates/java/17.0.19-zulu",
+    "gradle.java.home": "/home/kannuki/.sdkman/candidates/java/17.0.19-zulu",
+    "java.configuration.runtimes": [
+        {
+            "name": "JavaSE-17",
+            "path": "/home/kannuki/.sdkman/candidates/java/17.0.19-zulu",
+            "default": true
+        }
+    ]
+}
