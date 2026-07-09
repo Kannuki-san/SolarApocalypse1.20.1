@@ -126,6 +126,7 @@ plan.md
 gradle_task_setup.md
 .settings
 future_gameplay_preservation_notes.md
+release_notes_2.0.md
 
 # Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
 !gradle-wrapper.jar

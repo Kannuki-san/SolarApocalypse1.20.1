@@ -131,6 +131,16 @@ Solar Apocalypseの調整値はワールドごとではなく、Forgeの `config
 * mod説明文を現在の内容に合わせて更新
 * READMEを現在の進行、config、負荷注意、救済loot、インストール手順に合わせて更新
 
+## 2026-07-09 Release notes draft
+
+GitHub ReleaseとCurseForgeのページへ貼るため、2.0の更新ポイントをローカルメモとして整理した。
+
+対応。
+
+* `release_notes_2.0.md` をGit管理外のリリース文面メモとして追加
+* `.gitignore` に `release_notes_2.0.md` を追加
+* 日本語の主な更新点、救済loot、注意事項、英語サマリーを記載
+
 ## 2026-07-09 VS Code classpath diagnostics
 
 VS Code上で `net.minecraftforge.fml.*` が存在しないという診断が再発した。
