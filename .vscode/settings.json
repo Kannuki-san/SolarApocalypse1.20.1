@@ -2,6 +2,17 @@
     "java.jdt.ls.java.home": "/home/kannuki/.sdkman/candidates/java/17.0.19-zulu",
     "java.import.gradle.java.home": "/home/kannuki/.sdkman/candidates/java/17.0.19-zulu",
     "gradle.java.home": "/home/kannuki/.sdkman/candidates/java/17.0.19-zulu",
+    "java.server.launchMode": "Standard",
+    "java.import.gradle.enabled": true,
+    "java.import.gradle.wrapper.enabled": true,
+    "java.configuration.updateBuildConfiguration": "automatic",
+    "java.import.exclusions": [
+        "**/.gradle/**",
+        "**/build/**",
+        "**/bin/**",
+        "**/run/**",
+        "**/runs/**"
+    ],
     "java.configuration.runtimes": [
         {
             "name": "JavaSE-17",
