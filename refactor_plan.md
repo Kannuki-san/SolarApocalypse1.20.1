@@ -14,3 +14,18 @@ VS Codeの問題一覧に残っていた警告を整理した。
 ./gradlew build
 BUILD SUCCESSFUL
 ```
+
+## 2026-07-09 VS Code classpath diagnostics
+
+VS Code上で `net.minecraftforge.fml.*` が存在しないという診断が再発した。
+Gradle build自体は成功していたため、IDE側がForgeGradleのclasspathを拾えていない状態と判断した。
+
+対応。
+
+* `./gradlew eclipse` を実行し、JDT/Eclipse系language server向けの `.classpath`、`.project`、`.settings/` を生成
+* `.classpath` には `~/.gradle` 配下のForge/FML依存が入ることを確認
+* 生成物にはローカル絶対パスが含まれるため、`.gitignore` に `.classpath`、`.project`、`.settings/` を追加
+
+補足。
+
+VS Code側は生成後にウィンドウリロード、またはJava language serverのワークスペースクリーンを行うと反映されやすい。
