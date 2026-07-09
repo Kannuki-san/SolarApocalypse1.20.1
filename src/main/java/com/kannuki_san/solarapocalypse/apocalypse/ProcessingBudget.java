@@ -16,6 +16,10 @@ final class ProcessingBudget {
         return blockChanges < maxBlockChanges;
     }
 
+    int remainingBlockChanges() {
+        return maxBlockChanges - blockChanges;
+    }
+
     boolean consumeBlockChange() {
         // setBlock系の呼び出し前に消費し、上限超過時は処理側で何もしない。
         if (!hasBlockChangeBudget()) {

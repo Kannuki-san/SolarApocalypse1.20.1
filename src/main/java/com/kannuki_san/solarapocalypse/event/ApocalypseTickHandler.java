@@ -30,7 +30,6 @@ public final class ApocalypseTickHandler {
         // Minecraft内の日数は0日始まりなので、プレイヤー目線の1日目に合わせる。
         long day = (serverLevel.getDayTime() / 24000L) + 1L;
         ApocalypseScheduler scheduler = schedulers.computeIfAbsent(serverLevel.dimension(), key -> new ApocalypseScheduler());
-        scheduler.enqueueAroundPlayers(serverLevel);
         scheduler.tick(serverLevel, day);
     }
 

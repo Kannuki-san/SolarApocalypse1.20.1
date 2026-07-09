@@ -2,9 +2,9 @@ package com.kannuki_san.solarapocalypse.apocalypse;
 
 import com.kannuki_san.solarapocalypse.config.SolarApocalypseConfig;
 import com.kannuki_san.solarapocalypse.util.ExposureUtil;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.HashSet;
+import java.util.Random;
+import java.util.Set;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -14,22 +14,8 @@ import net.minecraft.world.phys.AABB;
 
 public final class ApocalypseScheduler {
 
-    private final Map<ChunkPos, ChunkWork> queuedChunks = new LinkedHashMap<>();
     private final SurfaceProcessor surfaceProcessor = new SurfaceProcessor();
-
-    public void enqueueAroundPlayers(ServerLevel level) {
-        // 各プレイヤー周囲のチャンクを候補に入れ、重複分はMapで自然にまとめる。
-        int radius = SolarApocalypseConfig.CHUNK_RADIUS.get();
-        for (ServerPlayer player : level.players()) {
-            ChunkPos center = player.chunkPosition();
-            for (int dx = -radius; dx <= radius; dx++) {
-                for (int dz = -radius; dz <= radius; dz++) {
-                    ChunkPos chunkPos = new ChunkPos(center.x + dx, center.z + dz);
-                    queuedChunks.computeIfAbsent(chunkPos, ChunkWork::new);
-                }
-            }
-        }
-    }
+    private final Random random = new Random();
 
     public void tick(ServerLevel level, long day) {
         // 1tickあたりのブロック更新量をここでまとめて制限する。
@@ -38,24 +24,44 @@ public final class ApocalypseScheduler {
                 SolarApocalypseConfig.MAX_FIRE_PLACEMENTS_PER_TICK.get()
         );
 
-        // キュー先頭から少しずつ進め、読み込み範囲全体へ処理が広がるようにする。
-        int processedChunks = 0;
-        int maxChunks = SolarApocalypseConfig.MAX_CHUNKS_PER_TICK.get();
-        int maxColumns = SolarApocalypseConfig.MAX_COLUMNS_PER_CHUNK_STEP.get();
-        Iterator<Map.Entry<ChunkPos, ChunkWork>> iterator = queuedChunks.entrySet().iterator();
-        while (iterator.hasNext() && processedChunks < maxChunks && budget.hasBlockChangeBudget()) {
-            ChunkWork work = iterator.next().getValue();
-            work.process(level, day, budget, surfaceProcessor, maxColumns);
-            processedChunks++;
-            if (work.isComplete()) {
-                iterator.remove();
-            }
-        }
+        processRandomChunks(level, day, budget);
 
         if (day >= SolarApocalypseConfig.ENTITY_BURN_DAY.get()) {
             // エンティティ燃焼はブロック更新とは別に、プレイヤー周囲だけを対象にする。
             igniteEntitiesUnderSun(level);
         }
+    }
+
+    private void processRandomChunks(ServerLevel level, long day, ProcessingBudget budget) {
+        if (level.players().isEmpty()) {
+            return;
+        }
+
+        // サーバー演算距離内に収まる範囲から、毎tickランダムに数チャンクだけ選ぶ。
+        int radius = processingRadius(level);
+        int attemptsPerChunk = SolarApocalypseConfig.RANDOM_ATTEMPTS_PER_CHUNK.get();
+        int maxChunks = SolarApocalypseConfig.MAX_CHUNKS_PER_TICK.get();
+        Set<ChunkPos> selectedChunks = new HashSet<>();
+        int guard = maxChunks * 8;
+        while (selectedChunks.size() < maxChunks && guard-- > 0 && budget.hasBlockChangeBudget()) {
+            ServerPlayer player = level.players().get(random.nextInt(level.players().size()));
+            ChunkPos center = player.chunkPosition();
+            int dx = random.nextInt(radius * 2 + 1) - radius;
+            int dz = random.nextInt(radius * 2 + 1) - radius;
+            ChunkPos selected = new ChunkPos(center.x + dx, center.z + dz);
+            if (selectedChunks.add(selected)) {
+                surfaceProcessor.processRandomChunk(level, selected, day, budget, attemptsPerChunk);
+            }
+        }
+    }
+
+    private int processingRadius(ServerLevel level) {
+        int configuredRadius = SolarApocalypseConfig.CHUNK_RADIUS.get();
+        int simulationRadius = level.getServer().getPlayerList().getSimulationDistance();
+        if (simulationRadius <= 0) {
+            return configuredRadius;
+        }
+        return Math.max(1, Math.min(configuredRadius, simulationRadius));
     }
 
     private void igniteEntitiesUnderSun(ServerLevel level) {

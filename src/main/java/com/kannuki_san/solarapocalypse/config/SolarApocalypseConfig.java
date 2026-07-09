@@ -15,10 +15,12 @@ public final class SolarApocalypseConfig {
     public static final ForgeConfigSpec.IntValue CHUNK_RADIUS;
     public static final ForgeConfigSpec.IntValue ENTITY_BURN_RADIUS_CHUNKS;
     public static final ForgeConfigSpec.IntValue MAX_CHUNKS_PER_TICK;
-    public static final ForgeConfigSpec.IntValue MAX_COLUMNS_PER_CHUNK_STEP;
+    public static final ForgeConfigSpec.IntValue RANDOM_ATTEMPTS_PER_CHUNK;
     public static final ForgeConfigSpec.IntValue MAX_BLOCK_CHANGES_PER_TICK;
     public static final ForgeConfigSpec.IntValue MAX_FIRE_PLACEMENTS_PER_TICK;
     public static final ForgeConfigSpec.IntValue WATER_SCAN_DEPTH;
+    public static final ForgeConfigSpec.IntValue WATER_CLUSTER_RADIUS;
+    public static final ForgeConfigSpec.IntValue MAX_WATER_CLUSTER_CHANGES;
 
     public static final ForgeConfigSpec.DoubleValue EVAPORATION_SOUND_VOLUME;
     public static final ForgeConfigSpec.DoubleValue EVAPORATION_SOUND_CHANCE;
@@ -41,20 +43,24 @@ public final class SolarApocalypseConfig {
         builder.pop();
 
         builder.push("processing");
-        CHUNK_RADIUS = builder.comment("Radius, in chunks, around each player to enqueue for apocalypse processing.")
+        CHUNK_RADIUS = builder.comment("Maximum radius, in chunks, around each player to randomly process.")
                 .defineInRange("chunkRadius", 8, 1, 32);
         ENTITY_BURN_RADIUS_CHUNKS = builder.comment("Radius, in chunks, around each player to scan for exposed entities.")
                 .defineInRange("entityBurnRadiusChunks", 4, 1, 32);
-        MAX_CHUNKS_PER_TICK = builder.comment("Maximum queued chunk work items to advance each server tick.")
+        MAX_CHUNKS_PER_TICK = builder.comment("Random chunks selected for apocalypse processing each server tick.")
                 .defineInRange("maxChunksPerTick", 4, 1, 64);
-        MAX_COLUMNS_PER_CHUNK_STEP = builder.comment("Maximum X/Z columns to process from each chunk work item per tick.")
-                .defineInRange("maxColumnsPerChunkStep", 32, 1, 256);
+        RANDOM_ATTEMPTS_PER_CHUNK = builder.comment("Random block positions tried inside each selected chunk.")
+                .defineInRange("randomAttemptsPerChunk", 8, 1, 128);
         MAX_BLOCK_CHANGES_PER_TICK = builder.comment("Maximum block changes caused by apocalypse processing per tick.")
-                .defineInRange("maxBlockChangesPerTick", 256, 1, 4096);
+                .defineInRange("maxRandomBlockChangesPerTick", 3, 1, 4096);
         MAX_FIRE_PLACEMENTS_PER_TICK = builder.comment("Maximum fire blocks placed per tick.")
-                .defineInRange("maxFirePlacementsPerTick", 32, 0, 1024);
+                .defineInRange("maxRandomFirePlacementsPerTick", 3, 0, 1024);
         WATER_SCAN_DEPTH = builder.comment("How far below the surface each column scans for exposed water over time.")
                 .defineInRange("waterScanDepth", 80, 1, 384);
+        WATER_CLUSTER_RADIUS = builder.comment("Radius around a found water block to evaporate as a small cluster.")
+                .defineInRange("waterClusterRadius", 1, 0, 4);
+        MAX_WATER_CLUSTER_CHANGES = builder.comment("Maximum water blocks removed from one found cluster.")
+                .defineInRange("maxWaterClusterChanges", 3, 1, 64);
         builder.pop();
 
         builder.push("effects");
