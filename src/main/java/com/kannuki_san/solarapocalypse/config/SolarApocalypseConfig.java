@@ -4,7 +4,7 @@ import net.minecraftforge.common.ForgeConfigSpec;
 
 public final class SolarApocalypseConfig {
 
-    public static final ForgeConfigSpec SERVER_SPEC;
+    public static final ForgeConfigSpec COMMON_SPEC;
 
     public static final ForgeConfigSpec.IntValue GRASS_DECAY_DAY;
     public static final ForgeConfigSpec.IntValue WATER_EVAPORATION_DAY;
@@ -75,7 +75,7 @@ public final class SolarApocalypseConfig {
                 .define("iceTurnsToWater", false);
         builder.pop();
 
-        SERVER_SPEC = builder.build();
+        COMMON_SPEC = builder.build();
     }
 
     private SolarApocalypseConfig() {

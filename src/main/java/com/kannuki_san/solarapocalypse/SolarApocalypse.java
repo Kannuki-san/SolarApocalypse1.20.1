@@ -15,7 +15,7 @@ public class SolarApocalypse {
 
     public SolarApocalypse(FMLJavaModLoadingContext context) {
         // MOD本体は薄く保ち、設定とイベント処理だけ登録する。
-        context.registerConfig(ModConfig.Type.SERVER, SolarApocalypseConfig.SERVER_SPEC);
+        context.registerConfig(ModConfig.Type.COMMON, SolarApocalypseConfig.COMMON_SPEC);
         MinecraftForge.EVENT_BUS.register(new ApocalypseTickHandler());
         MinecraftForge.EVENT_BUS.register(new FluidEventHandler());
     }

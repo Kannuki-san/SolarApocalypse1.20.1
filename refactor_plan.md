@@ -31,6 +31,17 @@ BUILD SUCCESSFUL
 1tickに選ぶチャンク数は変えていないため、遠方は低頻度で進む。
 軽さを維持しつつ、候補範囲だけ演算距離いっぱいに広げる方針にした。
 
+## 2026-07-09 Global config file location
+
+設定ファイルがワールドごとの `serverconfig` に生成されていた。
+Solar Apocalypseの調整値はワールドごとではなく、Forgeの `config` フォルダ側で扱いたいため登録タイプを変更した。
+
+対応。
+
+* config登録を `ModConfig.Type.SERVER` から `ModConfig.Type.COMMON` に変更
+* `SolarApocalypseConfig.SERVER_SPEC` を `COMMON_SPEC` にリネーム
+* 生成先を `run/saves/<world>/serverconfig/solarapocalypse-server.toml` ではなく `run/config/solarapocalypse-common.toml` 側に変更
+
 ## 2026-07-09 VS Code classpath diagnostics
 
 VS Code上で `net.minecraftforge.fml.*` が存在しないという診断が再発した。
