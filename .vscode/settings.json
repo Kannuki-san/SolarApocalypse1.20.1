@@ -8,5 +8,6 @@
             "path": "/home/kannuki/.sdkman/candidates/java/17.0.19-zulu",
             "default": true
         }
-    ]
+    ],
+    "java.compile.nullAnalysis.mode": "automatic"
 }
