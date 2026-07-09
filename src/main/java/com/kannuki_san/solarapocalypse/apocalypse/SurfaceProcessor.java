@@ -3,6 +3,9 @@ package com.kannuki_san.solarapocalypse.apocalypse;
 import com.kannuki_san.solarapocalypse.config.SolarApocalypseConfig;
 import com.kannuki_san.solarapocalypse.util.BlockTransformUtil;
 import com.kannuki_san.solarapocalypse.util.ExposureUtil;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Random;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
@@ -102,7 +105,7 @@ final class SurfaceProcessor {
     }
 
     private boolean processWater(ServerLevel level, int x, int z, int surfaceY, ProcessingBudget budget) {
-        // 3日目以降: 水を見つけたら3x3程度の小さな塊で、ただし上限つきでゆっくり蒸発させる。
+        // 3日目以降: 水を見つけたら半径ベースの小さな塊で蒸発させる。
         int minY = Math.max(level.getMinBuildHeight(), surfaceY - SolarApocalypseConfig.WATER_SCAN_DEPTH.get());
         int maxY = Math.min(level.getMaxBuildHeight() - 1, surfaceY + SURFACE_SCAN_PADDING);
         int firstY = minY + random.nextInt(Math.max(1, maxY - minY + 1));
@@ -122,26 +125,42 @@ final class SurfaceProcessor {
     }
 
     private boolean evaporateWaterCluster(ServerLevel level, BlockPos center, ProcessingBudget budget) {
-        int radius = SolarApocalypseConfig.WATER_CLUSTER_RADIUS.get();
-        int minConfig = SolarApocalypseConfig.MIN_WATER_CLUSTER_CHANGES.get();
-        int maxConfig = Math.max(minConfig, SolarApocalypseConfig.MAX_WATER_CLUSTER_CHANGES.get());
-        int targetChanges = minConfig + random.nextInt(maxConfig - minConfig + 1);
-        int maxChanges = Math.min(targetChanges, budget.remainingBlockChanges());
+        int minRadius = SolarApocalypseConfig.MIN_WATER_CLUSTER_RADIUS.get();
+        int maxRadius = Math.max(minRadius, SolarApocalypseConfig.MAX_WATER_CLUSTER_RADIUS.get());
+        int radius = minRadius + random.nextInt(maxRadius - minRadius + 1);
         int changed = 0;
-        if (maxChanges > 0 && tryEvaporateWaterAt(level, center, budget)) {
+        if (budget.hasBlockChangeBudget() && tryEvaporateWaterAt(level, center, budget)) {
             changed++;
         }
-        for (int i = 0; changed < maxChanges && i < maxChanges * 3 && budget.hasBlockChangeBudget(); i++) {
-            BlockPos pos = center.offset(
-                    random.nextInt(radius * 2 + 1) - radius,
-                    random.nextInt(radius * 2 + 1) - radius,
-                    random.nextInt(radius * 2 + 1) - radius
-            );
+        List<BlockPos> candidates = waterClusterCandidates(center, radius);
+        Collections.shuffle(candidates, random);
+        for (BlockPos pos : candidates) {
+            if (!budget.hasBlockChangeBudget()) {
+                break;
+            }
             if (tryEvaporateWaterAt(level, pos, budget)) {
                 changed++;
             }
         }
         return changed > 0;
+    }
+
+    private List<BlockPos> waterClusterCandidates(BlockPos center, int radius) {
+        List<BlockPos> candidates = new ArrayList<>();
+        int radiusSquared = radius * radius;
+        for (int dx = -radius; dx <= radius; dx++) {
+            for (int dy = -radius; dy <= radius; dy++) {
+                for (int dz = -radius; dz <= radius; dz++) {
+                    if (dx == 0 && dy == 0 && dz == 0) {
+                        continue;
+                    }
+                    if (dx * dx + dy * dy + dz * dz <= radiusSquared) {
+                        candidates.add(center.offset(dx, dy, dz));
+                    }
+                }
+            }
+        }
+        return candidates;
     }
 
     private boolean tryEvaporateWaterAt(ServerLevel level, BlockPos pos, ProcessingBudget budget) {

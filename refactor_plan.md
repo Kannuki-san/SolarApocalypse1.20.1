@@ -53,6 +53,17 @@ Solar Apocalypseの調整値はワールドごとではなく、Forgeの `config
 * 終末の草劣化日以降、オーバーワールドかつ空が見える場所では草ブロック/菌糸ブロックの自然拡散random tickをキャンセル
 * config説明コメントを英語行の下に日本語行が出る形へ変更
 
+## 2026-07-09 Water evaporation radius tuning
+
+水の蒸発がまだ遅く見えたため、1回の水処理をブロック数指定ではなく半径指定に寄せた。
+
+対応。
+
+* 水の塊処理を `2〜5個` のブロック数指定から、半径 `2〜3` の範囲指定へ変更
+* 半径内の候補をシャッフルし、予算が許す範囲でランダムに蒸発させるよう変更
+* 水のまとまりが進みやすいよう、1tickのブロック更新上限デフォルトを12へ変更
+* configキーを `minWaterClusterRadius` / `maxWaterClusterRadius` に変更し、古い水ブロック数指定に引きずられないようにした
+
 ## 2026-07-09 VS Code classpath diagnostics
 
 VS Code上で `net.minecraftforge.fml.*` が存在しないという診断が再発した。

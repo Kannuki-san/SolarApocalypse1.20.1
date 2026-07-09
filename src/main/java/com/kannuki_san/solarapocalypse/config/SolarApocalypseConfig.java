@@ -19,9 +19,8 @@ public final class SolarApocalypseConfig {
     public static final ForgeConfigSpec.IntValue MAX_BLOCK_CHANGES_PER_TICK;
     public static final ForgeConfigSpec.IntValue MAX_FIRE_PLACEMENTS_PER_TICK;
     public static final ForgeConfigSpec.IntValue WATER_SCAN_DEPTH;
-    public static final ForgeConfigSpec.IntValue WATER_CLUSTER_RADIUS;
-    public static final ForgeConfigSpec.IntValue MIN_WATER_CLUSTER_CHANGES;
-    public static final ForgeConfigSpec.IntValue MAX_WATER_CLUSTER_CHANGES;
+    public static final ForgeConfigSpec.IntValue MIN_WATER_CLUSTER_RADIUS;
+    public static final ForgeConfigSpec.IntValue MAX_WATER_CLUSTER_RADIUS;
 
     public static final ForgeConfigSpec.DoubleValue EVAPORATION_SOUND_VOLUME;
     public static final ForgeConfigSpec.DoubleValue EVAPORATION_SOUND_CHANCE;
@@ -73,7 +72,7 @@ public final class SolarApocalypseConfig {
         MAX_BLOCK_CHANGES_PER_TICK = builder.comment(
                         "Maximum block changes caused by apocalypse processing per tick.",
                         "終末処理が1tickに変更できるブロック数の上限。")
-                .defineInRange("maxBlockChangesPerTick", 6, 1, 4096);
+                .defineInRange("maxBlockChangesPerTick", 12, 1, 4096);
         MAX_FIRE_PLACEMENTS_PER_TICK = builder.comment(
                         "Maximum fire blocks placed per tick.",
                         "1tickに設置できる火ブロック数の上限。")
@@ -82,18 +81,14 @@ public final class SolarApocalypseConfig {
                         "How far below the surface each column scans for exposed water over time.",
                         "各柱状範囲で、地表からどれだけ下まで空にさらされた水を探すか。")
                 .defineInRange("waterScanDepth", 80, 1, 384);
-        WATER_CLUSTER_RADIUS = builder.comment(
-                        "Radius around a found water block to evaporate as a small cluster.",
-                        "見つけた水ブロックの周囲を小さな塊として蒸発させる半径。")
-                .defineInRange("waterClusterRadius", 1, 0, 4);
-        MIN_WATER_CLUSTER_CHANGES = builder.comment(
-                        "Minimum water blocks to try removing from one found cluster.",
-                        "見つけた水の塊から除去を試みる最小ブロック数。")
-                .defineInRange("minWaterClusterChanges", 2, 1, 64);
-        MAX_WATER_CLUSTER_CHANGES = builder.comment(
-                        "Maximum water blocks removed from one found cluster.",
-                        "見つけた水の塊から除去を試みる最大ブロック数。")
-                .defineInRange("maxRandomWaterClusterChanges", 5, 1, 64);
+        MIN_WATER_CLUSTER_RADIUS = builder.comment(
+                        "Minimum radius around a found water block to evaporate as a small cluster.",
+                        "見つけた水ブロックの周囲を小さな塊として蒸発させる最小半径。")
+                .defineInRange("minWaterClusterRadius", 2, 0, 8);
+        MAX_WATER_CLUSTER_RADIUS = builder.comment(
+                        "Maximum radius around a found water block to evaporate as a small cluster.",
+                        "見つけた水ブロックの周囲を小さな塊として蒸発させる最大半径。")
+                .defineInRange("maxWaterClusterRadius", 3, 0, 8);
         builder.pop();
 
         builder.push("effects");
