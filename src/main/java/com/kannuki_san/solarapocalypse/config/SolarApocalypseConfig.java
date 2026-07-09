@@ -72,7 +72,7 @@ public final class SolarApocalypseConfig {
         MAX_BLOCK_CHANGES_PER_TICK = builder.comment(
                         "Maximum block changes caused by apocalypse processing per tick.",
                         "終末処理が1tickに変更できるブロック数の上限。")
-                .defineInRange("maxBlockChangesPerTick", 12, 1, 4096);
+                .defineInRange("maxBlockChangesPerTick", 8, 1, 4096);
         MAX_FIRE_PLACEMENTS_PER_TICK = builder.comment(
                         "Maximum fire blocks placed per tick.",
                         "1tickに設置できる火ブロック数の上限。")
@@ -84,11 +84,11 @@ public final class SolarApocalypseConfig {
         MIN_WATER_CLUSTER_RADIUS = builder.comment(
                         "Minimum radius around a found water block to evaporate as a small cluster.",
                         "見つけた水ブロックの周囲を小さな塊として蒸発させる最小半径。")
-                .defineInRange("minWaterClusterRadius", 2, 0, 8);
+                .defineInRange("minWaterClusterRadius", 3, 0, 8);
         MAX_WATER_CLUSTER_RADIUS = builder.comment(
                         "Maximum radius around a found water block to evaporate as a small cluster.",
                         "見つけた水ブロックの周囲を小さな塊として蒸発させる最大半径。")
-                .defineInRange("maxWaterClusterRadius", 3, 0, 8);
+                .defineInRange("maxWaterClusterRadius", 5, 0, 8);
         builder.pop();
 
         builder.push("effects");

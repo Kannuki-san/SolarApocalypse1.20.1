@@ -82,6 +82,12 @@ final class SurfaceProcessor {
                 }
                 continue;
             }
+            if (BlockTransformUtil.isAridSurfacePlant(state)) {
+                if (tryWitherAridSurfacePlant(level, pos, state, budget)) {
+                    return true;
+                }
+                continue;
+            }
             if (BlockTransformUtil.isSurfacePlant(state)) {
                 if (tryWitherSurfacePlant(level, pos, state, budget)) {
                     return true;
@@ -144,6 +150,36 @@ final class SurfaceProcessor {
         return true;
     }
 
+    private boolean tryWitherAridSurfacePlant(ServerLevel level, BlockPos pos, BlockState state, ProcessingBudget budget) {
+        boolean changed = false;
+        boolean wantsDeadBush = random.nextDouble() < SURFACE_PLANT_WITHERS_TO_DEAD_BUSH_CHANCE;
+        BlockState deadBush = Blocks.DEAD_BUSH.defaultBlockState();
+        BlockState replacement = wantsDeadBush && deadBush.canSurvive(level, pos)
+                ? deadBush
+                : BlockTransformUtil.grassSnowOrIceReplacement(state);
+        if (replacement != null && budget.consumeBlockChange()) {
+            // サトウキビやサボテンも、草花と同じく低確率で枯れ木化し、それ以外は枯れて消える。
+            level.setBlockAndUpdate(pos, replacement);
+            sendEvaporationEffects(level, pos, 2);
+            changed = true;
+        }
+
+        BlockPos support = findAridPlantSupport(level, pos, state);
+        if (budget.hasBlockChangeBudget() && tryReplaceSandWithGlass(level, support, budget)) {
+            changed = true;
+        }
+        return changed;
+    }
+
+    private BlockPos findAridPlantSupport(ServerLevel level, BlockPos pos, BlockState plantState) {
+        BlockPos support = pos.below();
+        while (support.getY() >= level.getMinBuildHeight()
+                && level.getBlockState(support).is(plantState.getBlock())) {
+            support = support.below();
+        }
+        return support;
+    }
+
     private boolean tryReplaceGrassSnowOrIce(ServerLevel level, BlockPos pos, BlockState state, ProcessingBudget budget) {
         BlockState replacement = BlockTransformUtil.grassSnowOrIceReplacement(state);
         if (replacement == null || !budget.consumeBlockChange()) {
@@ -178,16 +214,13 @@ final class SurfaceProcessor {
         int maxRadius = Math.max(minRadius, SolarApocalypseConfig.MAX_WATER_CLUSTER_RADIUS.get());
         int radius = minRadius + random.nextInt(maxRadius - minRadius + 1);
         int changed = 0;
-        if (budget.hasBlockChangeBudget() && tryEvaporateWaterAt(level, center, budget)) {
+        if (budget.hasBlockChangeBudget() && tryEvaporateWaterAt(level, center, budget, true)) {
             changed++;
         }
         List<BlockPos> candidates = waterClusterCandidates(center, radius);
         Collections.shuffle(candidates, random);
         for (BlockPos pos : candidates) {
-            if (!budget.hasBlockChangeBudget()) {
-                break;
-            }
-            if (tryEvaporateWaterAt(level, pos, budget)) {
+            if (tryEvaporateWaterAt(level, pos, budget, false)) {
                 changed++;
             }
         }
@@ -212,12 +245,12 @@ final class SurfaceProcessor {
         return candidates;
     }
 
-    private boolean tryEvaporateWaterAt(ServerLevel level, BlockPos pos, ProcessingBudget budget) {
+    private boolean tryEvaporateWaterAt(ServerLevel level, BlockPos pos, ProcessingBudget budget, boolean consumesBudget) {
         if (!ExposureUtil.isExposedToOpenSky(level, pos)) {
             return false;
         }
         BlockState replacement = BlockTransformUtil.waterEvaporationReplacement(level.getBlockState(pos));
-        if (replacement == null || !budget.consumeBlockChange()) {
+        if (replacement == null || (consumesBudget && !budget.consumeBlockChange())) {
             return false;
         }
         level.setBlockAndUpdate(pos, replacement);
@@ -264,16 +297,23 @@ final class SurfaceProcessor {
         int maxY = Math.min(level.getMaxBuildHeight() - 1, surfaceY + SURFACE_SCAN_PADDING);
         for (int y = maxY; y >= minY && budget.hasBlockChangeBudget(); y--) {
             BlockPos pos = new BlockPos(x, y, z);
-            BlockState state = level.getBlockState(pos);
-            if ((state.is(Blocks.SAND) || state.is(Blocks.RED_SAND))
-                    && ExposureUtil.isExposedToOpenSky(level, pos)
-                    && budget.consumeBlockChange()) {
-                level.setBlockAndUpdate(pos, Blocks.GLASS.defaultBlockState());
-                sendEvaporationEffects(level, pos, 4);
+            if (tryReplaceSandWithGlass(level, pos, budget)) {
                 return true;
             }
         }
         return false;
+    }
+
+    private boolean tryReplaceSandWithGlass(ServerLevel level, BlockPos pos, ProcessingBudget budget) {
+        BlockState replacement = BlockTransformUtil.sandToGlassReplacement(level.getBlockState(pos));
+        if (replacement == null
+                || !ExposureUtil.isExposedToOpenSky(level, pos)
+                || !budget.consumeBlockChange()) {
+            return false;
+        }
+        level.setBlockAndUpdate(pos, replacement);
+        sendEvaporationEffects(level, pos, 4);
+        return true;
     }
 
     private boolean placeLimitedFire(ServerLevel level, BlockPos pos, ProcessingBudget budget) {

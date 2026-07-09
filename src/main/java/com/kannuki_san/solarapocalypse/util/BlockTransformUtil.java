@@ -20,6 +20,9 @@ public final class BlockTransformUtil {
         if (isSurfacePlant(state)) {
             return Blocks.AIR.defaultBlockState();
         }
+        if (isAridSurfacePlant(state)) {
+            return Blocks.AIR.defaultBlockState();
+        }
         if (isSnow(state)) {
             return Blocks.AIR.defaultBlockState();
         }
@@ -41,6 +44,19 @@ public final class BlockTransformUtil {
                 || state.is(Blocks.PINK_PETALS)
                 || state.is(BlockTags.FLOWERS)
                 || state.is(BlockTags.SAPLINGS);
+    }
+
+    public static boolean isAridSurfacePlant(BlockState state) {
+        // サトウキビとサボテンは根元の砂ガラス化も絡むので、通常の草花とは分けて扱う。
+        return state.is(Blocks.SUGAR_CANE)
+                || state.is(Blocks.CACTUS);
+    }
+
+    public static BlockState sandToGlassReplacement(BlockState state) {
+        if (state.is(Blocks.SAND) || state.is(Blocks.RED_SAND)) {
+            return Blocks.GLASS.defaultBlockState();
+        }
+        return null;
     }
 
     public static boolean isCombustibleApocalypseTarget(BlockState state) {
