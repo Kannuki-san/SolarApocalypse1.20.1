@@ -116,8 +116,7 @@ final class SurfaceProcessor {
                 continue;
             }
             BlockState state = level.getBlockState(pos);
-            BlockState replacement = BlockTransformUtil.waterEvaporationReplacement(state);
-            if (replacement != null) {
+            if (BlockTransformUtil.isWaterEvaporationOrigin(state)) {
                 return evaporateWaterCluster(level, pos, budget);
             }
         }

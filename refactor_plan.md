@@ -64,6 +64,15 @@ Solar Apocalypseの調整値はワールドごとではなく、Forgeの `config
 * 水のまとまりが進みやすいよう、1tickのブロック更新上限デフォルトを12へ変更
 * configキーを `minWaterClusterRadius` / `maxWaterClusterRadius` に変更し、古い水ブロック数指定に引きずられないようにした
 
+## 2026-07-09 Water source evaporation origins
+
+水流だけの場所から水蒸発クラスタが始まらないようにした。
+
+対応。
+
+* 水蒸発クラスタの起点判定を水源ブロックだけに限定
+* 起点が見つかった後の半径内巻き込みは、水流や水没ブロックも引き続き対象
+
 ## 2026-07-09 VS Code classpath diagnostics
 
 VS Code上で `net.minecraftforge.fml.*` が存在しないという診断が再発した。

@@ -71,6 +71,11 @@ public final class BlockTransformUtil {
                 || state.is(Blocks.LADDER);
     }
 
+    public static boolean isWaterEvaporationOrigin(BlockState state) {
+        // 水場を見つける起点は水源だけにし、水流だけの場所から処理が始まらないようにする。
+        return state.is(Blocks.WATER) && state.getFluidState().isSource();
+    }
+
     public static BlockState waterEvaporationReplacement(BlockState state) {
         // waterlogged blockはブロック自体を壊さず、水だけ抜く。
         if (state.is(Blocks.WATER)
