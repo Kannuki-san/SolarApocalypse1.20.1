@@ -1,12 +1,28 @@
 package com.kannuki_san.solarapocalypse.util;
 
 import com.kannuki_san.solarapocalypse.config.SolarApocalypseConfig;
+import net.minecraft.core.registries.Registries;
+import net.minecraft.resources.ResourceLocation;
 import net.minecraft.tags.BlockTags;
+import net.minecraft.tags.TagKey;
+import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraft.world.level.block.state.properties.BlockStateProperties;
+import net.minecraftforge.common.Tags;
 
 public final class BlockTransformUtil {
+
+    private static final TagKey<Block> FORGE_CACTI = forgeBlockTag("cacti");
+    private static final TagKey<Block> FORGE_CROPS = forgeBlockTag("crops");
+    private static final TagKey<Block> FORGE_FLOWERS = forgeBlockTag("flowers");
+    private static final TagKey<Block> FORGE_GRASS = forgeBlockTag("grass");
+    private static final TagKey<Block> FORGE_MUSHROOMS = forgeBlockTag("mushrooms");
+    private static final TagKey<Block> FORGE_PLANTS = forgeBlockTag("plants");
+    private static final TagKey<Block> FORGE_SAPLINGS = forgeBlockTag("saplings");
+    private static final TagKey<Block> FORGE_SUGAR_CANE = forgeBlockTag("sugar_cane");
+    private static final TagKey<Block> FORGE_TALL_GRASS = forgeBlockTag("tall_grass");
+    private static final TagKey<Block> FORGE_VINES = forgeBlockTag("vines");
 
     public static BlockState grassSnowOrIceReplacement(BlockState state) {
         // Day 2系の変換先をここに集約して、後からconfig対応しやすくする。
@@ -43,17 +59,27 @@ public final class BlockTransformUtil {
                 || state.is(Blocks.SWEET_BERRY_BUSH)
                 || state.is(Blocks.PINK_PETALS)
                 || state.is(BlockTags.FLOWERS)
-                || state.is(BlockTags.SAPLINGS);
+                || state.is(BlockTags.SAPLINGS)
+                || state.is(FORGE_CROPS)
+                || state.is(FORGE_FLOWERS)
+                || state.is(FORGE_GRASS)
+                || state.is(FORGE_MUSHROOMS)
+                || state.is(FORGE_PLANTS)
+                || state.is(FORGE_SAPLINGS)
+                || state.is(FORGE_TALL_GRASS)
+                || state.is(FORGE_VINES);
     }
 
     public static boolean isAridSurfacePlant(BlockState state) {
         // サトウキビとサボテンは根元の砂ガラス化も絡むので、通常の草花とは分けて扱う。
         return state.is(Blocks.SUGAR_CANE)
-                || state.is(Blocks.CACTUS);
+                || state.is(Blocks.CACTUS)
+                || state.is(FORGE_SUGAR_CANE)
+                || state.is(FORGE_CACTI);
     }
 
     public static BlockState sandToGlassReplacement(BlockState state) {
-        if (state.is(Blocks.SAND) || state.is(Blocks.RED_SAND)) {
+        if (state.is(Tags.Blocks.SAND)) {
             return Blocks.GLASS.defaultBlockState();
         }
         return null;
@@ -77,6 +103,10 @@ public final class BlockTransformUtil {
                 || state.is(BlockTags.BAMBOO_BLOCKS)
                 || state.is(BlockTags.WOOL)
                 || state.is(BlockTags.WOOL_CARPETS)
+                || state.is(Tags.Blocks.BARRELS_WOODEN)
+                || state.is(Tags.Blocks.BOOKSHELVES)
+                || state.is(Tags.Blocks.CHESTS_WOODEN)
+                || state.is(Tags.Blocks.FENCE_GATES_WOODEN)
                 || state.is(Blocks.HAY_BLOCK)
                 || state.is(Blocks.BOOKSHELF)
                 || state.is(Blocks.CHISELED_BOOKSHELF)
@@ -122,6 +152,10 @@ public final class BlockTransformUtil {
         return state.is(Blocks.ICE)
                 || state.is(Blocks.PACKED_ICE)
                 || state.is(Blocks.BLUE_ICE);
+    }
+
+    private static TagKey<Block> forgeBlockTag(String path) {
+        return TagKey.create(Registries.BLOCK, ResourceLocation.fromNamespaceAndPath("forge", path));
     }
 
     private BlockTransformUtil() {

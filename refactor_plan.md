@@ -98,6 +98,17 @@ Solar Apocalypseの調整値はワールドごとではなく、Forgeの `config
 * サトウキビとサボテンを地表植物と同じ枯れ処理へ追加
 * サトウキビとサボテンの根元をたどり、下の砂や赤砂をガラス化する処理を追加
 
+## 2026-07-09 Broader mod tag support
+
+他modの植物や木材系ブロックも終末処理に巻き込みやすくするため、バニラ個別ブロックだけでなく共通タグを見る対象を増やした。
+
+対応。
+
+* Forge系の `flowers`、`crops`、`mushrooms`、`plants`、`saplings`、`vines` などのブロックタグを地表植物の枯れ対象へ追加
+* Forge系の `sugar_cane`、`cacti` タグをサトウキビ・サボテン系の枯れ対象へ追加
+* 砂のガラス化判定をForgeの `sand` タグへ変更し、他modの砂も対象に入りやすくした
+* 木製の樽、本棚、チェスト、フェンスゲート系のForgeタグを燃焼対象へ追加
+
 ## 2026-07-09 VS Code classpath diagnostics
 
 VS Code上で `net.minecraftforge.fml.*` が存在しないという診断が再発した。
