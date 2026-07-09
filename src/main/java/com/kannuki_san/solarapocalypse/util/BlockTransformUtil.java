@@ -35,7 +35,6 @@ public final class BlockTransformUtil {
         // 地表の草花は日射で少しずつ枯れて消える対象にする。
         return state.is(Blocks.GRASS)
                 || state.is(Blocks.FERN)
-                || state.is(Blocks.DEAD_BUSH)
                 || state.is(Blocks.TALL_GRASS)
                 || state.is(Blocks.LARGE_FERN)
                 || state.is(Blocks.SWEET_BERRY_BUSH)
@@ -60,6 +59,8 @@ public final class BlockTransformUtil {
                 || state.is(BlockTags.ALL_SIGNS)
                 || state.is(BlockTags.ALL_HANGING_SIGNS)
                 || state.is(BlockTags.BAMBOO_BLOCKS)
+                || state.is(BlockTags.WOOL)
+                || state.is(BlockTags.WOOL_CARPETS)
                 || state.is(Blocks.HAY_BLOCK)
                 || state.is(Blocks.BOOKSHELF)
                 || state.is(Blocks.CHISELED_BOOKSHELF)
@@ -68,6 +69,8 @@ public final class BlockTransformUtil {
                 || state.is(Blocks.BEEHIVE)
                 || state.is(Blocks.BEE_NEST)
                 || state.is(Blocks.SCAFFOLDING)
+                || state.is(Blocks.BAMBOO)
+                || state.is(Blocks.BAMBOO_SAPLING)
                 || state.is(Blocks.LADDER);
     }
 

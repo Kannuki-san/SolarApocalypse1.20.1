@@ -25,6 +25,7 @@ final class SurfaceProcessor {
     private static final int TREE_SCAN_ABOVE_SURFACE = 18;
     private static final double TREE_FIRE_CHANCE = 0.35D;
     private static final double COMBUSTIBLE_DECAY_CHANCE = 0.08D;
+    private static final double SURFACE_PLANT_WITHERS_TO_DEAD_BUSH_CHANCE = 0.18D;
     private static final Direction[] HORIZONTAL_DIRECTIONS = {
             Direction.NORTH,
             Direction.SOUTH,
@@ -75,13 +76,14 @@ final class SurfaceProcessor {
                 continue;
             }
             BlockState state = level.getBlockState(pos);
+            if (state.is(Blocks.DEAD_BUSH)) {
+                if (tryDryDeadBushGround(level, pos, budget)) {
+                    return true;
+                }
+                continue;
+            }
             if (BlockTransformUtil.isSurfacePlant(state)) {
-                if (tryReplaceGrassSnowOrIce(level, pos, state, budget)) {
-                    BlockPos below = pos.below();
-                    if (budget.hasBlockChangeBudget()
-                            && ExposureUtil.isExposedToOpenSky(level, below)) {
-                        tryReplaceGrassSnowOrIce(level, below, level.getBlockState(below), budget);
-                    }
+                if (tryWitherSurfacePlant(level, pos, state, budget)) {
                     return true;
                 }
                 continue;
@@ -92,6 +94,54 @@ final class SurfaceProcessor {
             }
         }
         return false;
+    }
+
+    private boolean tryDryDeadBushGround(ServerLevel level, BlockPos deadBushPos, ProcessingBudget budget) {
+        BlockPos below = deadBushPos.below();
+        if (!ExposureUtil.isExposedToOpenSky(level, below)) {
+            return false;
+        }
+        boolean changed = tryReplaceGrassSnowOrIce(level, below, level.getBlockState(below), budget);
+        if (changed && !level.getBlockState(deadBushPos).is(Blocks.DEAD_BUSH)) {
+            // 下のブロック更新で壊れた場合だけ、荒廃表現として枯れ木を置き直す。
+            BlockState deadBush = Blocks.DEAD_BUSH.defaultBlockState();
+            if (budget.hasBlockChangeBudget()
+                    && deadBush.canSurvive(level, deadBushPos)
+                    && budget.consumeBlockChange()) {
+                level.setBlockAndUpdate(deadBushPos, deadBush);
+            }
+        }
+        return changed;
+    }
+
+    private boolean tryWitherSurfacePlant(ServerLevel level, BlockPos pos, BlockState state, ProcessingBudget budget) {
+        boolean wantsDeadBush = random.nextDouble() < SURFACE_PLANT_WITHERS_TO_DEAD_BUSH_CHANCE;
+        BlockPos below = pos.below();
+        if (wantsDeadBush
+                && budget.hasBlockChangeBudget()
+                && ExposureUtil.isExposedToOpenSky(level, below)) {
+            tryReplaceGrassSnowOrIce(level, below, level.getBlockState(below), budget);
+        }
+
+        if (!budget.consumeBlockChange()) {
+            return wantsDeadBush;
+        }
+        BlockState deadBush = Blocks.DEAD_BUSH.defaultBlockState();
+        BlockState replacement = wantsDeadBush && deadBush.canSurvive(level, pos)
+                ? deadBush
+                : BlockTransformUtil.grassSnowOrIceReplacement(state);
+        if (replacement == null) {
+            return false;
+        }
+        level.setBlockAndUpdate(pos, replacement);
+        sendEvaporationEffects(level, pos, 2);
+
+        if (!wantsDeadBush
+                && budget.hasBlockChangeBudget()
+                && ExposureUtil.isExposedToOpenSky(level, below)) {
+            tryReplaceGrassSnowOrIce(level, below, level.getBlockState(below), budget);
+        }
+        return true;
     }
 
     private boolean tryReplaceGrassSnowOrIce(ServerLevel level, BlockPos pos, BlockState state, ProcessingBudget budget) {

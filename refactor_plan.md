@@ -73,6 +73,18 @@ Solar Apocalypseの調整値はワールドごとではなく、Forgeの `config
 * 水蒸発クラスタの起点判定を水源ブロックだけに限定
 * 起点が見つかった後の半径内巻き込みは、水流や水没ブロックも引き続き対象
 
+## 2026-07-09 Dead bush preservation and scarce plant notes
+
+枯れ木が荒廃した地表の雰囲気に合っていたため、壊す対象ではなく残す対象へ寄せた。
+
+対応。
+
+* 枯れ木は消さず、下の草ブロックなどを土へ戻す対象に変更
+* 下のブロック更新で枯れ木が壊れた場合は、可能なら枯れ木を置き直すよう変更
+* 草、花、苗木などの地表植物は低確率で枯れ木へ変化するよう変更
+* 竹本体、竹の子、羊毛、カーペットを燃焼対象に追加
+* 後々の入手救済を考える候補を、Git管理外の `future_gameplay_preservation_notes.md` に記録
+
 ## 2026-07-09 VS Code classpath diagnostics
 
 VS Code上で `net.minecraftforge.fml.*` が存在しないという診断が再発した。
