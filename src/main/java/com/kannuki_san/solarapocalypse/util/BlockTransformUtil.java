@@ -121,12 +121,14 @@ public final class BlockTransformUtil {
     }
 
     public static boolean isWaterEvaporationOrigin(BlockState state) {
-        // 水場を見つける起点は水源だけにし、水流だけの場所から処理が始まらないようにする。
-        return state.is(Blocks.WATER) && state.getFluidState().isSource();
+        // 水源、泡柱、水没ブロックは蒸発の起点にし、水流だけの場所からは始めない。
+        return (state.is(Blocks.WATER) && state.getFluidState().isSource())
+                || state.is(Blocks.BUBBLE_COLUMN)
+                || isWaterlogged(state);
     }
 
     public static BlockState waterEvaporationReplacement(BlockState state) {
-        // waterlogged blockはブロック自体を壊さず、水だけ抜く。
+        // waterlogged blockはブロック自体を壊さず、水だけ抜く。チェストなどの中身も保持される。
         if (state.is(Blocks.WATER)
                 || state.is(Blocks.BUBBLE_COLUMN)
                 || state.is(Blocks.KELP)
@@ -140,6 +142,11 @@ public final class BlockTransformUtil {
             return state.setValue(BlockStateProperties.WATERLOGGED, false);
         }
         return null;
+    }
+
+    private static boolean isWaterlogged(BlockState state) {
+        return state.hasProperty(BlockStateProperties.WATERLOGGED)
+                && state.getValue(BlockStateProperties.WATERLOGGED);
     }
 
     private static boolean isSnow(BlockState state) {
