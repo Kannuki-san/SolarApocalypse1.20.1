@@ -15,8 +15,8 @@
 
 
 本MODは「負荷軽減」より「雰囲気・世界観優先」です。  
-**パフォーマンスに関する最適化は一切していません。**  
-（導入時はご自身の環境で十分にご注意ください）
+パフォーマンス対策は段階的に追加していますが、世界を大きく変化させるMODのため、
+導入時はご自身の環境で十分にご注意ください。
 
 ---
 
@@ -58,6 +58,16 @@
 
 ---
 
+## FAQ
+
+**Q. 地下で木や作物を育てられますか？**  
+A. はい。木や作物は自然光がなくても、松明などの人工光が十分にあれば地下でも育てられます。
+
+**Q. Can I grow trees and crops underground?**  
+A. Yes. Trees and crops do not require natural sunlight. They can grow with sufficient artificial light, such as torches or other light sources.
+
+---
+
 ## クレジット・参考 / Credits
 
 
@@ -83,4 +93,3 @@ Survive underground… if you can.
 > This mod is inspired by the original Solar Apocalypse mod (Minecraft 1.7.3 era). All code and assets are original, and no infringement of the original author's rights is intended.
 
 ---
-
