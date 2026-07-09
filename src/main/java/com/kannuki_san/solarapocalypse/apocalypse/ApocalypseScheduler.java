@@ -37,7 +37,7 @@ public final class ApocalypseScheduler {
             return;
         }
 
-        // サーバー演算距離内に収まる範囲から、毎tickランダムに数チャンクだけ選ぶ。
+        // サーバー演算距離いっぱいを候補にし、config側は必要な時だけ上限として使う。
         int radius = processingRadius(level);
         int attemptsPerChunk = SolarApocalypseConfig.RANDOM_ATTEMPTS_PER_CHUNK.get();
         int maxChunks = SolarApocalypseConfig.MAX_CHUNKS_PER_TICK.get();

@@ -15,6 +15,22 @@ VS Codeの問題一覧に残っていた警告を整理した。
 BUILD SUCCESSFUL
 ```
 
+## 2026-07-09 Simulation distance processing radius
+
+演算距離12チャンクに対して、終末処理の範囲が狭く見えることを確認した。
+原因は `chunkRadius` config のデフォルトが8で、実際の処理範囲が `min(config, simulationDistance)` になっていたため。
+
+対応。
+
+* 処理範囲configのキーを `maxProcessingChunkRadius` に変更
+* デフォルトを32にし、通常はサーバー演算距離が実際の上限になるよう変更
+* 既存server configの古い `chunkRadius=8` に引きずられないようにした
+
+補足。
+
+1tickに選ぶチャンク数は変えていないため、遠方は低頻度で進む。
+軽さを維持しつつ、候補範囲だけ演算距離いっぱいに広げる方針にした。
+
 ## 2026-07-09 VS Code classpath diagnostics
 
 VS Code上で `net.minecraftforge.fml.*` が存在しないという診断が再発した。

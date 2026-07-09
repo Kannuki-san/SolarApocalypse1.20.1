@@ -44,8 +44,8 @@ public final class SolarApocalypseConfig {
         builder.pop();
 
         builder.push("processing");
-        CHUNK_RADIUS = builder.comment("Maximum radius, in chunks, around each player to randomly process.")
-                .defineInRange("chunkRadius", 8, 1, 32);
+        CHUNK_RADIUS = builder.comment("Upper limit for random processing radius. The active server simulation distance is still used as the real cap.")
+                .defineInRange("maxProcessingChunkRadius", 32, 1, 32);
         ENTITY_BURN_RADIUS_CHUNKS = builder.comment("Radius, in chunks, around each player to scan for exposed entities.")
                 .defineInRange("entityBurnRadiusChunks", 4, 1, 32);
         MAX_CHUNKS_PER_TICK = builder.comment("Random chunks selected for apocalypse processing each server tick.")
