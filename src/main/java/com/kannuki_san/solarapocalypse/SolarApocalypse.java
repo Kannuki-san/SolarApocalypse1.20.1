@@ -3,6 +3,7 @@ package com.kannuki_san.solarapocalypse;
 import com.kannuki_san.solarapocalypse.config.SolarApocalypseConfig;
 import com.kannuki_san.solarapocalypse.event.ApocalypseTickHandler;
 import com.kannuki_san.solarapocalypse.event.FluidEventHandler;
+import com.kannuki_san.solarapocalypse.loot.SolarApocalypseLootModifiers;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
@@ -15,6 +16,7 @@ public class SolarApocalypse {
 
     public SolarApocalypse(FMLJavaModLoadingContext context) {
         // MOD本体は薄く保ち、設定とイベント処理だけ登録する。
+        SolarApocalypseLootModifiers.register(context.getModEventBus());
         context.registerConfig(ModConfig.Type.COMMON, SolarApocalypseConfig.COMMON_SPEC);
         MinecraftForge.EVENT_BUS.register(new ApocalypseTickHandler());
         MinecraftForge.EVENT_BUS.register(new FluidEventHandler());

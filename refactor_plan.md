@@ -109,6 +109,17 @@ Solar Apocalypseの調整値はワールドごとではなく、Forgeの `config
 * 砂のガラス化判定をForgeの `sand` タグへ変更し、他modの砂も対象に入りやすくした
 * 木製の樽、本棚、チェスト、フェンスゲート系のForgeタグを燃焼対象へ追加
 
+## 2026-07-09 Preservation loot in underground chests
+
+地表の植物が終末処理で失われても復旧手段が残るように、地下探索系のチェストlootへ少量の植物救済枠を追加した。
+
+対応。
+
+* Global Loot Modifierを追加
+* 廃坑、ダンジョン、要塞、古代都市のloot tableを対象に設定
+* 対象チェスト生成時、候補からランダムに1〜3種類を選び、それぞれ1〜5個追加
+* 候補にツタ、各種苗木とマングローブの芽、竹、サトウキビ、サボテン、スイレンの葉、コンブ、海草、シーピクルス、サンゴとサンゴファンを追加
+
 ## 2026-07-09 VS Code classpath diagnostics
 
 VS Code上で `net.minecraftforge.fml.*` が存在しないという診断が再発した。
