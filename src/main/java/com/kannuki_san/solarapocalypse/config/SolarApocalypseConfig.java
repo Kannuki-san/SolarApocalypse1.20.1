@@ -20,6 +20,7 @@ public final class SolarApocalypseConfig {
     public static final ForgeConfigSpec.IntValue MAX_FIRE_PLACEMENTS_PER_TICK;
     public static final ForgeConfigSpec.IntValue WATER_SCAN_DEPTH;
     public static final ForgeConfigSpec.IntValue WATER_CLUSTER_RADIUS;
+    public static final ForgeConfigSpec.IntValue MIN_WATER_CLUSTER_CHANGES;
     public static final ForgeConfigSpec.IntValue MAX_WATER_CLUSTER_CHANGES;
 
     public static final ForgeConfigSpec.DoubleValue EVAPORATION_SOUND_VOLUME;
@@ -52,15 +53,17 @@ public final class SolarApocalypseConfig {
         RANDOM_ATTEMPTS_PER_CHUNK = builder.comment("Random block positions tried inside each selected chunk.")
                 .defineInRange("randomAttemptsPerChunk", 8, 1, 128);
         MAX_BLOCK_CHANGES_PER_TICK = builder.comment("Maximum block changes caused by apocalypse processing per tick.")
-                .defineInRange("maxRandomBlockChangesPerTick", 3, 1, 4096);
+                .defineInRange("maxBlockChangesPerTick", 6, 1, 4096);
         MAX_FIRE_PLACEMENTS_PER_TICK = builder.comment("Maximum fire blocks placed per tick.")
                 .defineInRange("maxRandomFirePlacementsPerTick", 3, 0, 1024);
         WATER_SCAN_DEPTH = builder.comment("How far below the surface each column scans for exposed water over time.")
                 .defineInRange("waterScanDepth", 80, 1, 384);
         WATER_CLUSTER_RADIUS = builder.comment("Radius around a found water block to evaporate as a small cluster.")
                 .defineInRange("waterClusterRadius", 1, 0, 4);
+        MIN_WATER_CLUSTER_CHANGES = builder.comment("Minimum water blocks to try removing from one found cluster.")
+                .defineInRange("minWaterClusterChanges", 2, 1, 64);
         MAX_WATER_CLUSTER_CHANGES = builder.comment("Maximum water blocks removed from one found cluster.")
-                .defineInRange("maxWaterClusterChanges", 3, 1, 64);
+                .defineInRange("maxRandomWaterClusterChanges", 5, 1, 64);
         builder.pop();
 
         builder.push("effects");

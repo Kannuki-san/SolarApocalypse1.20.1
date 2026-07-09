@@ -5,11 +5,11 @@ import com.kannuki_san.solarapocalypse.util.BlockTransformUtil;
 import com.kannuki_san.solarapocalypse.util.ExposureUtil;
 import java.util.Random;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.Direction;
 import net.minecraft.core.particles.ParticleTypes;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.sounds.SoundEvents;
 import net.minecraft.sounds.SoundSource;
-import net.minecraft.tags.BlockTags;
 import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.state.BlockState;
@@ -21,6 +21,13 @@ final class SurfaceProcessor {
     private static final int TREE_SCAN_BELOW_SURFACE = 10;
     private static final int TREE_SCAN_ABOVE_SURFACE = 18;
     private static final double TREE_FIRE_CHANCE = 0.35D;
+    private static final double COMBUSTIBLE_DECAY_CHANCE = 0.08D;
+    private static final Direction[] HORIZONTAL_DIRECTIONS = {
+            Direction.NORTH,
+            Direction.SOUTH,
+            Direction.WEST,
+            Direction.EAST
+    };
 
     private final Random random = new Random();
 
@@ -65,14 +72,33 @@ final class SurfaceProcessor {
                 continue;
             }
             BlockState state = level.getBlockState(pos);
-            BlockState replacement = BlockTransformUtil.grassSnowOrIceReplacement(state);
-            if (replacement != null && budget.consumeBlockChange()) {
-                level.setBlockAndUpdate(pos, replacement);
-                sendEvaporationEffects(level, pos, 2);
+            if (BlockTransformUtil.isSurfacePlant(state)) {
+                if (tryReplaceGrassSnowOrIce(level, pos, state, budget)) {
+                    BlockPos below = pos.below();
+                    if (budget.hasBlockChangeBudget()
+                            && ExposureUtil.isExposedToOpenSky(level, below)) {
+                        tryReplaceGrassSnowOrIce(level, below, level.getBlockState(below), budget);
+                    }
+                    return true;
+                }
+                continue;
+            }
+
+            if (tryReplaceGrassSnowOrIce(level, pos, state, budget)) {
                 return true;
             }
         }
         return false;
+    }
+
+    private boolean tryReplaceGrassSnowOrIce(ServerLevel level, BlockPos pos, BlockState state, ProcessingBudget budget) {
+        BlockState replacement = BlockTransformUtil.grassSnowOrIceReplacement(state);
+        if (replacement == null || !budget.consumeBlockChange()) {
+            return false;
+        }
+        level.setBlockAndUpdate(pos, replacement);
+        sendEvaporationEffects(level, pos, 2);
+        return true;
     }
 
     private boolean processWater(ServerLevel level, int x, int z, int surfaceY, ProcessingBudget budget) {
@@ -97,7 +123,10 @@ final class SurfaceProcessor {
 
     private boolean evaporateWaterCluster(ServerLevel level, BlockPos center, ProcessingBudget budget) {
         int radius = SolarApocalypseConfig.WATER_CLUSTER_RADIUS.get();
-        int maxChanges = Math.min(SolarApocalypseConfig.MAX_WATER_CLUSTER_CHANGES.get(), budget.remainingBlockChanges());
+        int minConfig = SolarApocalypseConfig.MIN_WATER_CLUSTER_CHANGES.get();
+        int maxConfig = Math.max(minConfig, SolarApocalypseConfig.MAX_WATER_CLUSTER_CHANGES.get());
+        int targetChanges = minConfig + random.nextInt(maxConfig - minConfig + 1);
+        int maxChanges = Math.min(targetChanges, budget.remainingBlockChanges());
         int changed = 0;
         if (maxChanges > 0 && tryEvaporateWaterAt(level, center, budget)) {
             changed++;
@@ -129,7 +158,7 @@ final class SurfaceProcessor {
     }
 
     private boolean processTrees(ServerLevel level, int x, int z, int surfaceY, ProcessingBudget budget) {
-        // 4日目以降: 木と葉は消さず、従来寄りに少量の火・煙・音で燃えている感じを出す。
+        // 4日目以降: 木、葉、木材建材、干し草を少しずつ燃やし、低確率でブロック自体も崩す。
         int minY = Math.max(level.getMinBuildHeight(), surfaceY - TREE_SCAN_BELOW_SURFACE);
         int maxY = Math.min(level.getMaxBuildHeight() - 1, surfaceY + TREE_SCAN_ABOVE_SURFACE);
         for (int y = maxY; y >= minY && budget.hasBlockChangeBudget(); y--) {
@@ -139,12 +168,26 @@ final class SurfaceProcessor {
                 continue;
             }
 
-            if ((state.is(BlockTags.LOGS) || state.is(BlockTags.LEAVES))
-                    && random.nextDouble() < TREE_FIRE_CHANCE) {
+            if (!BlockTransformUtil.isCombustibleApocalypseTarget(state)) {
+                continue;
+            }
+            if (random.nextDouble() < COMBUSTIBLE_DECAY_CHANCE && tryRemoveCombustible(level, pos, budget)) {
+                return true;
+            }
+            if (random.nextDouble() < TREE_FIRE_CHANCE) {
                 return placeLimitedFire(level, pos, budget);
             }
         }
         return false;
+    }
+
+    private boolean tryRemoveCombustible(ServerLevel level, BlockPos pos, ProcessingBudget budget) {
+        if (!budget.consumeBlockChange()) {
+            return false;
+        }
+        level.setBlockAndUpdate(pos, Blocks.AIR.defaultBlockState());
+        sendSmoke(level, pos, 3);
+        return true;
     }
 
     private boolean processSand(ServerLevel level, int x, int z, int surfaceY, ProcessingBudget budget) {
@@ -167,16 +210,16 @@ final class SurfaceProcessor {
 
     private boolean placeLimitedFire(ServerLevel level, BlockPos pos, ProcessingBudget budget) {
         // 火の設置は上限つき。燃え広がりによる負荷を抑える。
-        BlockPos above = pos.above();
-        if (!level.getBlockState(above).isAir() || !budget.consumeFirePlacement()) {
+        BlockPos firePos = findFirePosition(level, pos);
+        if (firePos == null || !budget.consumeFirePlacement()) {
             return false;
         }
-        level.setBlockAndUpdate(above, Blocks.FIRE.defaultBlockState());
+        level.setBlockAndUpdate(firePos, Blocks.FIRE.defaultBlockState());
         sendSmoke(level, pos, 5);
         if (random.nextDouble() < 0.05D) {
             level.playSound(
                     null,
-                    above,
+                    firePos,
                     SoundEvents.FIRE_AMBIENT,
                     SoundSource.BLOCKS,
                     0.1F,
@@ -184,6 +227,26 @@ final class SurfaceProcessor {
             );
         }
         return true;
+    }
+
+    private BlockPos findFirePosition(ServerLevel level, BlockPos target) {
+        BlockPos above = target.above();
+        if (canPlaceFire(level, above)) {
+            return above;
+        }
+        for (int i = 0; i < HORIZONTAL_DIRECTIONS.length; i++) {
+            Direction direction = HORIZONTAL_DIRECTIONS[random.nextInt(HORIZONTAL_DIRECTIONS.length)];
+            BlockPos side = target.relative(direction);
+            if (canPlaceFire(level, side)) {
+                return side;
+            }
+        }
+        return null;
+    }
+
+    private boolean canPlaceFire(ServerLevel level, BlockPos pos) {
+        BlockState fire = Blocks.FIRE.defaultBlockState();
+        return level.getBlockState(pos).isAir() && fire.canSurvive(level, pos);
     }
 
     private void sendEvaporationEffects(ServerLevel level, BlockPos pos, int particles) {
