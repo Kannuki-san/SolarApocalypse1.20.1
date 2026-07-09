@@ -130,3 +130,4 @@ release_notes_2.0.md
 
 # Avoid ignoring Gradle wrapper jar file (.jar files are usually ignored)
 !gradle-wrapper.jar
+curseforge_Description.md
