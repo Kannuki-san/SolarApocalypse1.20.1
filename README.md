@@ -35,6 +35,7 @@
 * サトウキビやサボテンも枯れ、下の砂はガラス化
 * Forge/Minecraftの共通タグを使い、他modの植物や木材系ブロックもできる範囲で対象化
 * 廃坑、ダンジョン、要塞、古代都市のチェストに植物救済lootを追加
+* 独自ブロックや独自アイテムを追加しないため、基本的にサーバー側導入のみで動作
 
 大量の水流や大規模な森林火災では負荷が出る場合がありますが、処理はランダム化と上限設定で抑えています。
 
@@ -53,7 +54,7 @@
 ## インストール / Installation
 
 1. Forge 1.20.1を導入します。開発確認はForge `47.4.4` で行っています。
-2. `solarapocalypse-2.0.jar` を `mods` フォルダに入れます。
+2. `solarapocalypse-2.0.jar` をサーバーの `mods` フォルダに入れます。シングルプレイではクライアント側の `mods` フォルダに入れてください。
 3. 新規ワールド、またはバックアップ済みの既存ワールドでプレイしてください。
 
 ## 注意事項 / Notices
@@ -62,6 +63,7 @@
 * 大切なワールドでは必ずバックアップを取ってください。
 * 大規模な水辺や森林では一時的にFPS低下やサーバー負荷が発生する場合があります。
 * 設定ファイルはワールドごとではなく、Forgeの共通 `config` フォルダに生成されます。
+* マルチプレイでは基本的にサーバー側のみで動作しますが、クライアント側にも入れておくことは問題ありません。
 
 ## FAQ
 
@@ -87,3 +89,4 @@ MIT
 Solar Apocalypse is a hardcore end-of-the-world survival mod for Forge 1.20.1.
 As days pass, exposed grass dies, water evaporates, forests burn, sand turns into glass, and entities under open sky catch fire.
 Underground exploration chests can contain a small amount of preservation loot, such as saplings, vines, bamboo, and corals, so a ruined world can still be recovered.
+The mod is intended to work as a server-side-only mod in multiplayer because it does not add custom blocks, items, menus, or network packets.
