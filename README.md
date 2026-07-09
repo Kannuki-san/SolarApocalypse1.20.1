@@ -2,94 +2,88 @@
 
 ## 概要 / Description
 
-**Solar Apocalypse**は、かつて存在した“終末MOD”の雰囲気を再現した、
+**Solar Apocalypse**は、かつて存在した終末MODの雰囲気に触発された、
 **Forge 1.20.1対応のサバイバルMOD**です。
 
-ワールドに降り注ぐ太陽の力が日ごとに強まり、
-- **草原が枯れ**  
-- **水が蒸発し**  
-- **木や森が燃え盛り**  
-- **砂漠がガラスに変わり**  
-- **地表に出ている生物やアイテムも炎上**
+日数が進むごとに地表の環境が壊れていきます。
 
+* 草原が枯れ、地表植物が消えていく
+* 水源から水が蒸発し、池や川が干上がる
+* 木、葉、木材建材、干し草、羊毛などが燃える
+* 砂や赤砂がガラスに変わる
+* 日光下のエンティティやアイテムが燃える
+* 地下探索系チェストに、失われやすい植物の救済lootが少量追加される
 
+太陽は大きくなりません。
 
-本MODは「負荷軽減」より「雰囲気・世界観優先」です。  
-パフォーマンス対策は段階的に追加していますが、世界を大きく変化させるMODのため、
-導入時はご自身の環境で十分にご注意ください。
+## 進行 / Progression
 
----
+デフォルト設定では以下の順で進行します。設定は `config/solarapocalypse-common.toml` で変更できます。
 
-## 進行・ゲーム内容
-
-- **2日目**: 草が徐々に枯れ、世界が茶色く変化していく
-- **3日目**: 地表の水が蒸発。池や川、湖が干上がり、煙と蒸発音が響く
-- **4日目**: 木や葉が日光で自然発火。森が地獄のような火の海に
-- **5日目以降**: 日光下のすべてのエンティティ（プレイヤー/動物/アイテム）が燃え、砂がガラス化
-
----
+* **2日目**: 草ブロック、ポドゾル、菌糸、苔などが土へ戻り、草花や苗木が枯れ始めます。
+* **3日目**: 空にさらされた水源を起点に、水が塊で蒸発し始めます。
+* **4日目**: 木、葉、木材建材、干し草、羊毛などが燃え始めます。
+* **5日目**: 日光下のエンティティが燃え、砂や赤砂がガラス化し始めます。
 
 ## 特徴 / Features
 
-- 「昔懐かしい終末MOD」を現代に対応させました。
-  **※太陽は大きくなりません。**
-- Forge 1.20.1専用
-- 地下や屋内は安全だが、地表はすべて終末の脅威にさらされる
-- 負荷対策は“雰囲気重視”のため非対応（FPS低下やサーバー過負荷に注意！）
-- とある動画のみが情報源のため、それ以外の機能はありません。
+* Forge 1.20.1専用
+* サーバーの演算距離内で、ランダムなチャンクを少しずつ処理
+* 水は水源を起点にし、周囲の水流や水没ブロックもまとめて蒸発
+* 草ブロックや菌糸の自然拡散を抑制
+* 枯れ木は残し、周囲の荒廃表現として利用
+* サトウキビやサボテンも枯れ、下の砂はガラス化
+* Forge/Minecraftの共通タグを使い、他modの植物や木材系ブロックもできる範囲で対象化
+* 廃坑、ダンジョン、要塞、古代都市のチェストに植物救済lootを追加
 
----
+大量の水流や大規模な森林火災では負荷が出る場合がありますが、処理はランダム化と上限設定で抑えています。
 
-## インストール方法 / Installation
+## 救済loot / Preservation Loot
 
-1. **Forge 1.20.1（推奨バージョン: 47.4.4）**を導入
-2. ダウンロードした`SolarApocalypse-1.0-1.20.1.jar`を`mods`フォルダに入れる
-3. 新規ワールドを作成、または既存ワールドでプレイ  
-　（既存ワールドはバックアップ推奨）
+地表が壊滅したあとでも復旧手段が残るように、地下探索系のチェストに以下の候補から少量が追加されます。
 
----
+対象チェスト生成時、ランダムに1〜3種類、それぞれ1〜5個が追加されます。
+
+* ツタ
+* 各種苗木、マングローブの芽
+* 竹、サトウキビ、サボテン
+* スイレンの葉、コンブ、海草、シーピクルス
+* サンゴ、サンゴファン、サンゴブロック
+
+## インストール / Installation
+
+1. Forge 1.20.1を導入します。開発確認はForge `47.4.4` で行っています。
+2. `solarapocalypse-2.0.jar` を `mods` フォルダに入れます。
+3. 新規ワールド、またはバックアップ済みの既存ワールドでプレイしてください。
 
 ## 注意事項 / Notices
 
-- **本MODは世界を徹底的に破壊します**  
-　大切なワールドでは使用しないでください
-- **パフォーマンスに関する苦情・要望は受け付けておりません**  
-　終末世界の雰囲気をお楽しみください
-
----
+* 本MODはワールドの地表を大きく変化させます。
+* 大切なワールドでは必ずバックアップを取ってください。
+* 大規模な水辺や森林では一時的にFPS低下やサーバー負荷が発生する場合があります。
+* 設定ファイルはワールドごとではなく、Forgeの共通 `config` フォルダに生成されます。
 
 ## FAQ
 
 **Q. 地下で木や作物を育てられますか？**  
-A. はい。木や作物は自然光がなくても、松明などの人工光が十分にあれば地下でも育てられます。
+A. はい。自然光がなくても、松明などの人工光が十分にあれば育てられます。
 
 **Q. Can I grow trees and crops underground?**  
-A. Yes. Trees and crops do not require natural sunlight. They can grow with sufficient artificial light, such as torches or other light sources.
-
----
+A. Yes. Trees and crops do not require natural sunlight. They can grow with sufficient artificial light.
 
 ## クレジット・参考 / Credits
 
+本MODはMinecraft 1.7.x時代のSolar Apocalypse MODに触発されています。
+オリジナルの雰囲気をリスペクトしていますが、コードとアセットは自作です。
 
-> 本MODはMinecraft 1.7.3時代に配布されていたSolar Apocalypse MODに触発されており、オリジナルMODの雰囲気をリスペクトしていますが、コード・アセットはすべて自作です。オリジナル作者の権利を侵害する意図はありません。
+* finitewater作者様の一部コード・実装アイデアを参考
 
-- finitewater作者様の一部コード・実装アイデアを参考
+## ライセンス / License
 
----
+MIT
 
-## ソースコード/改造・二次配布 / License
+## English Short Description
 
-- 自由に改造・二次配布可  
-
----
-
-## English (for CurseForge)
-
-**Solar Apocalypse is a hardcore end-of-the-world mod for Forge 1.20.1.**  
-Each day, the sun gets closer, burning grass, evaporating water, igniting forests, turning sand to glass, and setting every entity on fire.  
-Survive underground… if you can.  
-**No performance optimization, all atmosphere! Use at your own risk.**
-
-> This mod is inspired by the original Solar Apocalypse mod (Minecraft 1.7.3 era). All code and assets are original, and no infringement of the original author's rights is intended.
-
----
+Solar Apocalypse is a hardcore end-of-the-world survival mod for Forge 1.20.1.
+As days pass, exposed grass dies, water evaporates, forests burn, sand turns into glass, and entities under open sky catch fire.
+Underground exploration chests can contain a small amount of preservation loot, such as saplings, vines, bamboo, and corals, so a ruined world can still be recovered.
